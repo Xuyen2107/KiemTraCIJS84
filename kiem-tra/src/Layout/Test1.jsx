@@ -1,13 +1,12 @@
 import React from "react";
-import TestHook from "./TestHook.js";
+import TestHook1 from "./TestHook1.js";
 import "./Test.css";
 
-const Test = () => {
+const Test1 = () => {
    const {
       status,
       inputValue,
       list,
-      selectedItems,
       listActive,
       listCompleted,
       statusClick,
@@ -16,7 +15,7 @@ const Test = () => {
       handleCheckboxChange,
       actXoa,
       deleteAll,
-   } = TestHook();
+   } = TestHook1();
 
    return (
       <div className="test">
@@ -73,12 +72,10 @@ const Test = () => {
                            type="checkbox"
                            value={item.id}
                            name={item.name}
-                           checked={selectedItems.includes(item.id)}
+                           checked={item.active}
                            onChange={handleCheckboxChange}
                         />
-                        <label className={`${selectedItems.includes(item.id) ? "label" : ""}`}>
-                           {item.name}
-                        </label>
+                        <label className={item.active ? "label" : ""}>{item.name}</label>
                      </div>
                   ))}
             </div>
@@ -93,7 +90,7 @@ const Test = () => {
                            type="checkbox"
                            value={item.id}
                            name={item.name}
-                           checked={selectedItems.includes(item.id)}
+                           checked={item.active}
                            onChange={handleCheckboxChange}
                         />
                         <label>{item.name}</label>
@@ -112,12 +109,10 @@ const Test = () => {
                               type="checkbox"
                               value={item.id}
                               name={item.name}
-                              checked={selectedItems.includes(item.id)}
+                              checked={item.active}
                               onChange={handleCheckboxChange}
                            />
-                           <label className={`${selectedItems.includes(item.id) ? "label" : ""}`}>
-                              {item.name}
-                           </label>{" "}
+                           <label className={item.active ? "label" : ""}>{item.name}</label>
                         </div>
                         <button
                            className="delete_btn"
@@ -137,4 +132,4 @@ const Test = () => {
    );
 };
 
-export default Test;
+export default Test1;

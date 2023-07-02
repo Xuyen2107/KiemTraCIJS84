@@ -1,35 +1,31 @@
 import { useState, useEffect } from "react";
 
-const TestHook = () => {
+const TestHook1 = () => {
    const [status, setStatus] = useState("All");
    const [inputValue, setInputValue] = useState("");
    const [list, setList] = useState([]);
-   const [selectedItems, setSelectedItems] = useState([]);
    const [listActive, setListActive] = useState([]);
    const [listCompleted, setListCompleted] = useState([]);
 
    useEffect(() => {
-      const storedList = localStorage.getItem("ListDetail");
-      const storedSelectedItems = localStorage.getItem("SelectedItems");
-      if (storedList) {
-         setList(JSON.parse(storedList));
-      }
-      if (storedSelectedItems) {
-         setSelectedItems(JSON.parse(storedSelectedItems));
+      const storageList = localStorage.getItem("ListDetail");
+
+      if (storageList) {
+         setList(JSON.parse(storageList));
       }
    }, []);
 
    useEffect(() => {
-      const newListActive = list.filter((listItem) => {
-         return !selectedItems.some((selectedItem) => selectedItem === listItem.id);
-      });
-      setListActive(newListActive);
+      const newListActive = list?.filter((item) => item?.active === false);
+      const newListCompleted = list?.filter((item) => item?.active === true);
 
-      const newListCompleted = list?.filter((listItem) => {
-         return selectedItems?.some((selectedItem) => selectedItem === listItem.id);
-      });
-      setListCompleted(newListCompleted);
-   }, [list, selectedItems]);
+      if (newListActive) {
+         setListActive(newListActive);
+      }
+      if (newListCompleted) {
+         setListCompleted(newListCompleted);
+      }
+   }, [list]);
 
    const statusClick = (name) => {
       if (name === "All") {
@@ -56,11 +52,12 @@ const TestHook = () => {
 
    const addBtn = () => {
       if (inputValue) {
-         const user = {
+         const newUser = {
             id: genId(),
+            active: false,
             name: inputValue,
          };
-         const newList = [...list, user];
+         const newList = [...list, newUser];
          setList(newList);
          setInputValue("");
          localStorage.setItem("ListDetail", JSON.stringify(newList));
@@ -71,31 +68,36 @@ const TestHook = () => {
 
    const handleCheckboxChange = (e) => {
       const { value, checked } = e.target;
-      let updatedSelectedItems = JSON.parse(JSON.stringify(selectedItems));
       if (checked) {
-         updatedSelectedItems = [...updatedSelectedItems, parseInt(value)];
-         localStorage.setItem("SelectedItems", JSON.stringify(updatedSelectedItems));
+         const newList = list?.map((user) => {
+            if (user.id === parseInt(value)) {
+               return { ...user, active: true };
+            }
+            return user;
+         });
+         setList(newList);
+         localStorage.setItem("ListDetail", JSON.stringify(newList));
       } else {
-         updatedSelectedItems = updatedSelectedItems.filter((item) => item !== parseInt(value));
-         localStorage.setItem("SelectedItems", JSON.stringify(updatedSelectedItems));
+         const newList = list?.map((user) => {
+            if (user.id === parseInt(value)) {
+               return { ...user, active: false };
+            }
+            return user;
+         });
+         setList(newList);
+         localStorage.setItem("ListDetail", JSON.stringify(newList));
       }
-      setSelectedItems(updatedSelectedItems);
    };
 
    const actXoa = (id) => {
-      const updatedListComplete = listCompleted.filter((item) => item.id !== id);
       const updatedList = list.filter((item) => item.id !== id);
-      const updatedSelectedItems = selectedItems.filter((item) => item !== id);
+      const updatedListComplete = listCompleted.filter((item) => item.id !== id);
       if (updatedListComplete) {
          setListCompleted(updatedListComplete);
       }
       if (updatedList) {
          setList(updatedList);
          localStorage.setItem("ListDetail", JSON.stringify(updatedList));
-      }
-      if (updatedSelectedItems) {
-         setSelectedItems(updatedSelectedItems);
-         localStorage.setItem("SelectedItems", JSON.stringify(updatedSelectedItems));
       }
    };
 
@@ -107,20 +109,13 @@ const TestHook = () => {
       );
       setList(updatedList);
 
-      const updatedSelectedItems = selectedItems.filter(
-         (item) => !listCompleted.some((completedItem) => completedItem.id === item)
-      );
-      setSelectedItems(updatedSelectedItems);
-
       localStorage.setItem("ListDetail", JSON.stringify(updatedList));
-      localStorage.setItem("SelectedItems", JSON.stringify(updatedSelectedItems));
    };
 
    return {
       status,
       inputValue,
       list,
-      selectedItems,
       listActive,
       listCompleted,
       statusClick,
@@ -128,7 +123,7 @@ const TestHook = () => {
       addBtn,
       handleCheckboxChange,
       actXoa,
-      deleteAll
+      deleteAll,
    };
 };
-export default TestHook;
+export default TestHook1;

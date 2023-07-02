@@ -1,10 +1,10 @@
-import Test from "./Layout/Test.jsx";
+import Test1 from "./Layout/Test1.jsx";
 import "./App.css";
 
 function App() {
    return (
       <div className="App">
-         <Test />
+         <Test1 />
       </div>
    );
 }
